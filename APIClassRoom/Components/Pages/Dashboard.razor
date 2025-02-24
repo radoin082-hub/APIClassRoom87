@@ -1,0 +1,190 @@
+﻿@page "/dashboard"
+@using System.Globalization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+@using Orientation = Radzen.Orientation
+@using AlignItems = Radzen.AlignItems
+@using MudBlazor
+@using JustifyContent = Radzen.JustifyContent
+@using Variant = Radzen.Variant
+
+<RadzenCardGroup Responsive="@responsive">
+    <RadzenCard Variant="@variant">
+        <RadzenStack JustifyContent="JustifyContent.SpaceBetween" Gap="1rem">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween">
+                <RadzenText TextStyle="TextStyle.H6">Team 1</RadzenText>
+                <RadzenText TextStyle="TextStyle.H2" class="rz-m-0">@($"{Math.Round(teamOneProgress)}%")</RadzenText>
+            </RadzenStack>
+            <RadzenProgressBar @bind-Value=@teamOneProgress ShowValue="false" Style="--rz-progressbar-height: 1rem;"/>
+        </RadzenStack>
+    </RadzenCard>
+    <RadzenCard Variant="@variant">
+        <RadzenStack JustifyContent="JustifyContent.SpaceBetween" Gap="1rem">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween">
+                <RadzenText TextStyle="TextStyle.H6">Team 2</RadzenText>
+                <RadzenText TextStyle="TextStyle.H2" class="rz-m-0">@($"{Math.Round(teamTwoProgress)}%")</RadzenText>
+            </RadzenStack>
+            <RadzenProgressBar @bind-Value=@teamTwoProgress ShowValue="false" Style="--rz-progressbar-height: 1rem;"/>
+        </RadzenStack>
+    </RadzenCard>
+    <RadzenCard Variant="@variant">
+        <RadzenStack JustifyContent="JustifyContent.SpaceBetween" Gap="1rem">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween">
+                <RadzenText TextStyle="TextStyle.H6">Team 3</RadzenText>
+                <RadzenText TextStyle="TextStyle.H2" class="rz-m-0">@($"{Math.Round(teamThreeProgress)}%")</RadzenText>
+            </RadzenStack>
+            <RadzenProgressBar @bind-Value=@teamThreeProgress ShowValue="false" Style="--rz-progressbar-height: 1rem;"/>
+        </RadzenStack>
+    </RadzenCard>
+</RadzenCardGroup>
+<RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
+    <RadzenCard Variant="Variant.Outlined">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Color scheme:" Component="ColorScheme" />
+            <RadzenDropDown Data="@colorSchemes" @bind-Value="@colorScheme" Name="ColorScheme">
+                <Template>
+                    @Enum.GetName(typeof(ColorScheme), context)
+                </Template>
+            </RadzenDropDown>
+        </RadzenStack>
+    </RadzenCard>
+
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeLG="8">
+            <RadzenChart ColorScheme="@colorScheme">
+                @for (var year = 2017; year <= 2024; year++)
+                {
+                var currentYearRevenue = revenue.Where(r => r.Year == year).ToList();
+                <RadzenColumnSeries Data="@currentYearRevenue" CategoryProperty="Quarter" Title="@year.ToString()" ValueProperty="Revenue" />
+                }
+                <RadzenColumnOptions Margin="0" />
+                <RadzenValueAxis Formatter="@FormatAsUSD" />
+            </RadzenChart>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeLG="4">
+            <RadzenChart ColorScheme="@colorScheme">
+                <RadzenPieSeries Data="@revenue.Where(r => r.Year == 2020)" Title="Revenue" CategoryProperty="Quarter" ValueProperty="Revenue" />
+            </RadzenChart>
+        </RadzenColumn>
+    </RadzenRow>
+
+</RadzenStack>
+@code {
+    [Inject] public AuthenticationStateProvider authentication { set; get; }
+    string result = "";
+    bool responsive = true;
+    Variant variant = Variant.Filled;
+
+    double teamOneProgress = 55;
+    double teamTwoProgress = 32;
+    double teamThreeProgress = 76;
+
+
+    bool showDataLabels = true; 
+
+    // Formatter method for USD currency
+    /*string FormatAsUSD(object value)
+    {
+        if (value is double val)
+        {
+            return val.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+        }
+
+        return value?.ToString() ?? "";
+    }*/
+
+    private async Task loadData()
+    {
+        var auth = await authentication.GetAuthenticationStateAsync();
+        var nameClaim = auth.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+        result = nameClaim?.Value ?? "Unknown";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    int dataSize = 4;
+    double[] data = { 77, 25, 20, 5 };
+    string[] labels = { "Uranium", "Plutonium", "Thorium", "Caesium", "Technetium", "Promethium",
+        "Polonium", "Astatine", "Radon", "Francium", "Radium", "Actinium", "Protactinium",
+        "Neptunium", "Americium", "Curium", "Berkelium", "Californium", "Einsteinium", "Mudblaznium" };
+
+    Random random = new Random();
+
+    void RandomizeData()
+    {
+        var new_data = new double[dataSize];
+        for (int i = 0; i < new_data.Length; i++)
+            new_data[i] = random.NextDouble() * 100;
+        data = new_data;
+        StateHasChanged();
+    }
+
+    void AddDataSize()
+    {
+        if (dataSize < 20)
+        {
+            dataSize = dataSize + 1;
+            RandomizeData();
+        }
+    }
+
+    void RemoveDataSize()
+    {
+        if (dataSize > 0)
+        {
+            dataSize = dataSize - 1;
+            RandomizeData();
+        }
+    }
+}
+@code {
+IEnumerable<ColorScheme> colorSchemes = Enum.GetValues(typeof(ColorScheme)).Cast<ColorScheme>();
+ColorScheme colorScheme = ColorScheme.Palette;
+
+class DataItem
+{
+public int Year { get; set; }
+public string Quarter { get; set; }
+public double Revenue { get; set; }
+}
+
+string FormatAsUSD(object value)
+{
+return ((double)value).ToString("C0", CultureInfo.CreateSpecificCulture("en-US"));
+}
+
+IList<DataItem> revenue = new List<DataItem>();
+
+protected override void OnInitialized()
+{
+var random = new Random();
+
+for (var year = 2017; year <= 2024; year++)
+{
+for (var quarter = 1; quarter <= 4; quarter++)
+{
+revenue.Add(new DataItem
+{
+Year = year,
+Quarter = $"Q{quarter}",
+Revenue = random.NextDouble() * 200000
+});
+}
+}
+}
+}
+

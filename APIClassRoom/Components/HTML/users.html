@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
+            text-align: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="available_rooms.html">📋 Salles Disponibles</a>
+    <a href="reservation_form.html">📝 Réserver</a>
+    <a href="my_reservations.html">✅ Mes Réservations</a>
+    <a href="dashboard.html">🎛 Admin</a>
+    <a href="settings.html">⚙️ Paramètres</a>
+    <a href="login.html">🔑 Déconnexion</a>
+</div>
+
+<style>
+    .navbar {
+        background-color: #007bff;
+        padding: 15px;
+        text-align: center;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+    <div class="container">
+        <h2>Gestion des Utilisateurs</h2>
+        <a href="#" class="btn-add" onclick="addUser()">+ Ajouter un utilisateur</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Les utilisateurs seront chargés ici dynamiquement -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadUsers();
+        });
+
+        async function loadUsers() {
+            try {
+                const response = await fetch("http://localhost:5000/users");
+                const users = await response.json();
+                const tableBody = document.getElementById("userTableBody");
+
+                tableBody.innerHTML = "";
+                users.forEach(user => {
+                    const row = `<tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editUser(${user.id})">Modifier</button>
+                            <button class="btn btn-delete" onclick="deleteUser(${user.id})">Supprimer</button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Erreur lors du chargement des utilisateurs:", error);
+            }
+        }
+
+        function editUser(id) {
+            alert("Modifier l'utilisateur avec ID: " + id);
+            // Ici, vous pouvez ouvrir un formulaire de modification
+        }
+
+        function deleteUser(id) {
+            if (confirm("Voulez-vous vraiment supprimer cet utilisateur?")) {
+                fetch(`http://localhost:5000/users/${id}`, { method: "DELETE" })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        loadUsers();
+                    })
+                    .catch(error => console.error("Erreur lors de la suppression:", error));
+            }
+        }
+
+        function addUser() {
+            alert("Ajouter un nouvel utilisateur");
+            // Ici, vous pouvez afficher un formulaire pour ajouter un nouvel utilisateur
+        }
+    </script>
+
+</body>
+</html>

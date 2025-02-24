@@ -1,0 +1,35 @@
+﻿@page "/b"
+@using BlazorBootstrap
+@rendermode InteractiveServer
+
+<Button Color="ButtonColor.Dark" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Dark)">Dark Spinner</Button>
+<button @onclick="gen">Gen</button>
+<InputText @bind-value="text"/>
+    <p>@hashedPassword</p>
+
+<Preload LoadingText="Loading .."/>
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+    string text = string.Empty;
+    string hashedPassword;
+    bool isLoading = true;
+    private async Task ShowSpinnerAsync(SpinnerColor spinnerColor)
+    {
+        PreloadService.Show(spinnerColor);
+
+        await Task.Delay(3000); 
+
+        PreloadService.Hide();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+       
+        StateHasChanged(); 
+    }
+
+    public void gen()
+    {
+        hashedPassword = BCrypt.Net.BCrypt.HashPassword(text);
+        Console.WriteLine($"Hashed Password: {hashedPassword}");
+    }
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -5px;
+            margin-bottom: 5px;
+            display: none;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("registerForm");
+            const password = form.password;
+            const confirmPassword = form.confirmPassword;
+            const email = form.email;
+            
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function validatePassword(password) {
+                return password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password);
+            }
+
+            form.addEventListener("submit", function (e) {
+                let valid = true;
+                
+                // Vérification de l'email
+                if (!validateEmail(email.value)) {
+                    alert("Veuillez entrer un email valide.");
+                    valid = false;
+                }
+                
+                // Vérification du mot de passe
+                if (!validatePassword(password.value)) {
+                    alert("Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre.");
+                    valid = false;
+                }
+                
+                // Vérification de la confirmation du mot de passe
+                if (password.value !== confirmPassword.value) {
+                    alert("Les mots de passe ne correspondent pas.");
+                    valid = false;
+                }
+                
+                if (!valid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Créer un compte</h2>
+            <form id="registerForm">
+                <input type="text" name="name" placeholder="Nom complet" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <input type="password" name="confirmPassword" placeholder="Confirmer le mot de passe" required>
+                <select name="role">
+                    <option value="student">Étudiant</option>
+                    <option value="teacher">Enseignant</option>
+                    <option value="admin">Administrateur</option>
+                </select>
+                <button type="submit">S'inscrire</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Réservations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-approve {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #ff9800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Gestion des Réservations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Utilisateur</th>
+                    <th>Salle</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reservationTableBody">
+                <!-- Les réservations seront chargées ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadReservations();
+        });
+
+        async function loadReservations() {
+            try {
+                const response = await fetch("http://localhost:5000/reservations");
+                const reservations = await response.json();
+                const tableBody = document.getElementById("reservationTableBody");
+
+                tableBody.innerHTML = "";
+                reservations.forEach(reservation => {
+                    const row = `<tr>
+                        <td>${reservation.id}</td>
+                        <td>${reservation.user}</td>
+                        <td>${reservation.room}</td>
+                        <td>${reservation.date}</td>
+                        <td>${reservation.status}</td>
+                        <td>
+                            <button class="btn btn-approve" onclick="updateStatus(${reservation.id}, 'Approuvé')">✔</button>
+                            <button class="btn btn-reject" onclick="updateStatus(${reservation.id}, 'Rejeté')">✖</button>
+                            <button class="btn btn-delete" onclick="deleteReservation(${reservation.id})">🗑</button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Erreur lors du chargement des réservations:", error);
+            }
+        }
+
+        function updateStatus(id, status) {
+            fetch(`http://localhost:5000/reservations/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            }).then(() => loadReservations());
+        }
+
+        function deleteReservation(id) {
+            if (confirm("Voulez-vous supprimer cette réservation ?")) {
+                fetch(`http://localhost:5000/reservations/${id}`, { method: "DELETE" })
+                    .then(() => loadReservations());
+            }
+        }
+    </script>
+
+</body>
+</html>

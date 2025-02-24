@@ -1,0 +1,38 @@
+﻿@*@page "/logout"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject HttpClient Client
+@implements IDisposable
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // This dedicated page ensures we have a clean context for logout
+        await PerformLogout();
+    }
+
+    private async Task PerformLogout()
+    {
+        // POST to the server logout endpoint
+        await Client.PostAsync("/Login/logout", null);
+
+        // Explicitly clear the cookie on client side
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            // Delete auth cookie with all possible variations
+            document.cookie = 'Red=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure=;';
+            document.cookie = 'Red=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/Login; secure=;';
+            
+            // Clear all storage
+            sessionStorage.clear();
+            localStorage.clear();
+        ");
+
+        // Navigate to home with a clean reload
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        // Clean up any resources if needed
+    }
+}*@

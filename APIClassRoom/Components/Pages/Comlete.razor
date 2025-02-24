@@ -1,0 +1,85 @@
+﻿@page "/complete-form"
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+<h3>Complete Your Registration</h3>
+
+@if (!FormSubmitted)
+{
+    <EditForm Model="user" OnValidSubmit="SubmitForm">
+        <DataAnnotationsValidator/>
+
+        <p>Welcome, <b>@Email</b>! Please complete your details.</p>
+
+        <div class="mb-3">
+            <label class="form-label">Full Name:</label>
+            <input type="text" class="form-control" @bind="user.FullName" placeholder="Enter your full name" required/>
+            <ValidationMessage For="@(() => user.FullName)" class="text-danger"/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password:</label>
+            <input type="password" class="form-control" @bind="user.Password" placeholder="Enter your password" required/>
+            <ValidationMessage For="@(() => user.Password)" class="text-danger"/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Role:</label>
+            <select class="form-control" @bind="user.Role" @bind:event="onchange">
+                <option value="">Select...</option>
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+            </select>
+        </div>
+
+        @if (IsStudent)
+        {
+        <div class="mb-3">
+            <label class="form-label">Select Level:</label>
+            <select class="form-control" @bind="user.Level">
+                <option value="">Select level...</option>
+                <option value="L1">L1</option>
+                <option value="L2">L2</option>
+                <option value="L3">L3</option>
+                <option value="M1">M1</option>
+                <option value="M2">M2</option>
+            </select>
+        </div>
+        }
+
+
+
+        <button class="btn btn-success w-100" type="submit">Create Account</button>
+    </EditForm>
+}
+else
+{
+    <p>Thank you! Your registration is complete.</p>
+}
+@code {
+    [Parameter] public string? Email { get; set; }
+    private bool FormSubmitted = false;
+    private UserModel user = new();
+
+    private bool IsStudent => user.Role == "Student";
+
+    private async Task SubmitForm()
+    {
+        Console.WriteLine($"User Registered: {user.FullName}, {user.Role}, {user.Level}");
+        FormSubmitted = true;
+    }
+
+    public class UserModel
+    {
+        [Required(ErrorMessage = "Full Name is required")]
+        public string FullName { get; set; } = "";
+
+        [Required(ErrorMessage = "Password is required")]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+        public string Password { get; set; } = "";
+
+        [Required(ErrorMessage = "Role is required")]
+        public string Role { get; set; } = "";
+
+        public string Level { get; set; } = "";
+    }
+}

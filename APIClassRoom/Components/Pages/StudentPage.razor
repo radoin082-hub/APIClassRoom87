@@ -1,0 +1,119 @@
+﻿@page "/ClassCompensation"
+@using APIClassRoom.Model
+@using APIClassRoom.Storage
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject HttpClient Http
+@attribute [Authorize (Roles="Student")]
+
+@code {
+    [Parameter] public int ReservationId { get; set; }
+    private List<ClassReservationDto> reservations = new List<ClassReservationDto>();
+    [Inject] public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    int levelId;
+    [Inject] public ClassCompensationStorage ClassCompensationStorage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+
+        var levelIdClaim = result.User.Identities.FirstOrDefault()?.Claims
+            .FirstOrDefault(c => c.Type == "LevelId")?.Value;
+
+
+        if (!int.TryParse(levelIdClaim, out levelId))
+        {
+            levelId = 0; 
+        }
+
+
+        reservations = await ClassCompensationStorage.GetReservationsByLevelIdAsync(levelId);
+    }
+
+}
+
+@if (reservations != null && reservations.Any())
+{
+    <div class="reservation-container">
+        @foreach (var reservation in reservations)
+        {
+            <div class="reservation-card">
+                <h2>@reservation.ClassName</h2>
+                <p>
+                    <strong>Department:</strong> @reservation.Department
+                </p>
+                <p>
+                    <strong>Block:</strong> @reservation.Block
+                </p>
+                <p>
+                    <strong>Teacher:</strong> @reservation.TeacherName
+                </p>
+                <p>
+                    <strong>Date Reserved:</strong> @reservation.DateReserved.ToString("yyyy-MM-dd")
+                </p>
+                <p>
+                    <strong>Time Slot:</strong> @reservation.TimeSlot
+                </p>
+                <p>
+                    <strong>Day:</strong> @reservation.Day
+                </p>
+                <p>
+                    <strong>Compensation:</strong> @(string.IsNullOrEmpty(reservation.Compensation) ? "N/A" : reservation.Compensation)
+                </p>
+                <p>
+                    <strong>Description:</strong> @(string.IsNullOrEmpty(reservation.Description) ? "No description available" : reservation.Description)
+                </p>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Loading reservation details...</p>
+}
+
+<style>
+    .reservation-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .reservation-card {
+        width: 380px;
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-left: 5px solid #007bff;
+    }
+
+    .reservation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .reservation-card h2 {
+        color: #007bff;
+        font-size: 1.4em;
+        margin-bottom: 12px;
+        font-weight: bold;
+    }
+
+    .reservation-card p {
+        color: #444;
+        font-size: 0.95em;
+        line-height: 1.5;
+        margin: 6px 0;
+    }
+
+    .reservation-card strong {
+        color: #222;
+        font-weight: 600;
+    }
+
+</style>

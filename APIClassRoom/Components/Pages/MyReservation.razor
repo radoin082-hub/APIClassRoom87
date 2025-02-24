@@ -1,0 +1,85 @@
+﻿@page "/MyReservation"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using APIClassRoom.Model
+@using APIClassRoom.Storage
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Teacher")]
+@inject ClassReservationStorage ReservationStorage
+
+<h3>My Reservations</h3>
+
+@if (reservations == null)
+{
+    <p>Loading...</p>
+}
+else if (!reservations.Any())
+{
+    <p>No reservations found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>N</th>
+            <th>Department</th>
+            <th>Block</th>
+            <th>Date Reserved</th>
+            <th>Time Slot</th>
+            <th>Day</th>
+            <th>Level</th>
+            <th>Compensation</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var reservation in reservations)
+        {
+            <tr>
+                <td>@(reservations.IndexOf(reservation) + 1)</td>
+                <td>@reservation.Department</td>
+                <td>@reservation.Block</td>
+                <td>@reservation.DateReserved</td>
+                <td>@reservation.TimeSlot</td>
+                <td>@reservation.Day</td>
+                <td>@reservation.LevelId</td>
+                <td>@reservation.Compensation</td>
+                <td>@reservation.Description</td>
+                <td>
+                    <button class="btn btn-danger" @onclick="() => DeleteReservation(reservation.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ClassReservation> reservations;
+    [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = result.User;
+        var userId = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+        if (userId != null)
+        {
+            reservations = await ReservationStorage.GetByIdAsync(userId);
+           
+        }
+    }
+
+    private async Task DeleteReservation(Guid id)
+    {
+        bool success = await ReservationStorage.DeleteAsync(id);
+        if (success)
+        {
+            reservations = await ReservationStorage.GetAllAsync();
+        }
+    }
+
+}

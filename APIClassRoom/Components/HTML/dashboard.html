@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            transition: 0.3s;
+        }
+        .sidebar ul li a:hover, .sidebar ul li a.active {
+            background-color: #1abc9c;
+            border-radius: 5px;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex: 1;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="available_rooms.html">📋 Salles Disponibles</a>
+    <a href="reservation_form.html">📝 Réserver</a>
+    <a href="my_reservations.html">✅ Mes Réservations</a>
+    <a href="dashboard.html">🎛 Admin</a>
+    <a href="settings.html">⚙️ Paramètres</a>
+    <a href="login.html">🔑 Déconnexion</a>
+</div>
+
+<style>
+    .navbar {
+        background-color: #007bff;
+        padding: 15px;
+        text-align: center;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="#" class="active">Tableau de Bord</a></li>
+            <li><a href="#">Utilisateurs</a></li>
+            <li><a href="#">Réservations</a></li>
+            <li><a href="#">Salles</a></li>
+            <li><a href="#">Paramètres</a></li>
+            <li><a href="login.html">Déconnexion</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>Tableau de Bord</h1>
+        <div class="stats">
+            <div class="card">
+                <h3>Utilisateurs</h3>
+                <p id="userCount">0</p>
+            </div>
+            <div class="card">
+                <h3>Réservations</h3>
+                <p id="bookingCount">0</p>
+            </div>
+            <div class="card">
+                <h3>Salles Disponibles</h3>
+                <p id="roomCount">0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            try {
+                // استعلام للحصول على الإحصائيات من الـ API
+                const response = await fetch("http://localhost:5000/stats");
+                const data = await response.json();
+
+                // تحديث القيم في لوحة التحكم
+                document.getElementById("userCount").textContent = data.users;
+                document.getElementById("bookingCount").textContent = data.reservations;
+                document.getElementById("roomCount").textContent = data.rooms;
+            } catch (error) {
+                console.error("Erreur lors du chargement des statistiques:", error);
+            }
+        });
+    </script>
+</body>
+</html>

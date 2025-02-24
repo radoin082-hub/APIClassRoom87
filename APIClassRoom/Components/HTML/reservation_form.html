@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver une Salle</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .form-group { text-align: left; margin: 15px 0; }
+        label { font-weight: bold; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn-submit { background-color: #007bff; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🏨 Réserver une Salle</h2>
+        <form id="reservationForm">
+            <div class="form-group">
+                <label for="roomId">ID Salle:</label>
+                <input type="text" id="roomId" disabled>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Heure:</label>
+                <input type="time" id="time" required>
+            </div>
+            <button type="submit" class="btn-submit">📅 Confirmer la Réservation</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            document.getElementById("roomId").value = urlParams.get("roomId");
+        });
+
+        document.getElementById("reservationForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const roomId = document.getElementById("roomId").value;
+            const date = document.getElementById("date").value;
+            const time = document.getElementById("time").value;
+
+            const response = await fetch("http://localhost:5000/reservations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomId, date, time })
+            });
+
+            if (response.ok) {
+                alert("Réservation effectuée avec succès !");
+                window.location.href = "my_reservations.html";
+            }
+        });
+    </script>
+
+</body>
+</html>

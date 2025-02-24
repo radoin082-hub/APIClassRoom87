@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Système de Réservation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #222;
+            color: white;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            margin: 50px auto;
+            width: 60%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode .container {
+            background: #333;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .dark-mode h1 {
+            color: white;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+        .dark-mode p {
+            color: #ccc;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            background-color: #007bff;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+        }
+        .dark-mode .footer {
+            background-color: #111;
+        }
+        .contact {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode .contact {
+            background: #333;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+        .contact a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .contact a:hover {
+            text-decoration: underline;
+        }
+        /* زر الوضع الداكن */
+        .toggle-container {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        .toggle-btn {
+            padding: 8px 15px;
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .toggle-btn:hover {
+            background-color: #e6b800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="available_rooms.html">📋 Salles Disponibles</a>
+    <a href="reservation_form.html">📝 Réserver</a>
+    <a href="my_reservations.html">✅ Mes Réservations</a>
+    <a href="dashboard.html">🎛 Admin</a>
+    <a href="settings.html">⚙️ Paramètres</a>
+    <a href="login.html">🔑 Déconnexion</a>
+</div>
+
+<style>
+    .navbar {
+        background-color: #007bff;
+        padding: 15px;
+        text-align: center;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+    <div class="header">
+        <h1>Bienvenue dans le Système de Réservation</h1>
+        <div class="toggle-container">
+            <button class="toggle-btn" onclick="toggleDarkMode()">🌗 Mode Sombre/Clair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>À propos du projet</h2>
+        <p>Ce système permet la réservation facile des salles et laboratoires pour les étudiants et enseignants.</p>
+
+        <div class="btn-container">
+            <a href="login.html" class="btn">Se connecter</a>
+            <a href="register.html" class="btn">Créer un compte</a>
+        </div>
+    </div>
+
+    <div class="contact">
+        <h2>Contactez-nous</h2>
+        <p>📧 Email: <a href="mailto:contact@reservation-system.com">contact@reservation-system.com</a></p>
+        <p>📞 Téléphone: +213 555 123 456</p>
+        <p>📍 Adresse: Université de XYZ, Alger, Algérie</p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Projet de Réservation | Développé par l'équipe XYZ</p>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            let isDarkMode = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDarkMode);
+        }
+
+        // Vérifier si l'utilisateur a déjà activé le mode sombre
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+        });
+    </script>
+
+</body>
+</html>

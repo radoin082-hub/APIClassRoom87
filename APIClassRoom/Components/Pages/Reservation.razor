@@ -1,0 +1,423 @@
+﻿@page "/reservation"
+@using APIClassRoom.Model
+@using APIClassRoom.Storage
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize (Roles="Teacher")]
+
+<h3>Reservation</h3>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Button to open reservation popup -->
+            <button class="btn btn-primary w-100 mb-2" @onclick="OpenPopup">Reserve a Class</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Class Selection Dropdown -->
+            <select @onchange="OnClassSelected" class="form-control">
+                <option value="">-- Select Class --</option>
+                @foreach (var c in ClassRooms)
+                {
+                    <option value="@c.IdClass">@c.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
+            <!-- Select Button -->
+            <button class="btn btn-primary w-100" @onclick="LoadSchedule">Select</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Reservation Popup -->
+@if (IsPopupOpen)
+{
+    <EditForm Model="@reservation" OnValidSubmit="SubmitReservation">
+        <DataAnnotationsValidator/>
+        @*<ValidationSummary />*@
+
+        <div class="popup-overlay">
+            <div class="popup">
+                <h2>Reserve a Class</h2>
+                <div class="popup-content">
+                    <div class="input-group">
+                        <label>Class:</label>
+                        <select @bind="reservation.IdClass" class="form-control">
+                            <option value="">-- Select Class --</option>
+                            @foreach (var classe in ClassRooms)
+                            {
+                                <option value="@classe.IdClass">@classe.Name</option>
+                            }
+                        </select>
+                        <span class="text-danger" style="font-size:small">
+                            <ValidationMessage For="@(() => reservation.IdClass)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Department:</label>
+                        <select @bind="reservation.Department" class="form-control">
+                            <option value="">-- Select Time Slot --</option>
+                            @foreach (var department in Department)
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </select>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.Department)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Block:</label>
+                        <select @bind="reservation.Block" class="form-control">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.Block)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Date Reserved:</label>
+                        <input type="date" @bind="reservation.DateReserved" class="form-control"/>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.DateReserved)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Time Slot:</label>
+                        <select @bind="reservation.TimeSlot" class="form-control">
+                            <option value="">-- Select Time Slot --</option>
+                            @foreach (var slot in TimeSlots)
+                            {
+                                <option value="@slot">@slot</option>
+                            }
+                        </select>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.TimeSlot)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Day:</label>
+                        <select @bind="reservation.Day" class="form-control">
+                            <option value="">-- Select Day --</option>
+                            @foreach (var day in DaysOfWeek)
+                            {
+                                <option value="@day">@day</option>
+                            }
+                        </select>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.Day)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Level:</label>
+                        <select @bind="reservation.LevelId" class="form-control">
+                            <option value="1">L1</option>
+                            <option value="2">L2</option>
+                            <option value="3">L3</option>
+                            <option value="4">M1</option>
+                            <option value="5">M2</option>
+                        </select>
+                        <span class="text-danger">
+                            <ValidationMessage For="@(() => reservation.LevelId)"/>
+                        </span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Compensation:</label>
+                        <input @bind="reservation.Compensation" class="form-control"/>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Description:</label>
+                        <textarea @bind="reservation.Description" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="popup-buttons">
+                    <button class="submit-btn" type="submit">Submit</button>
+                    <button class="cancel-btn" type="button" @onclick="ClosePopup">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+<!-- Class Schedule Popup -->
+@if (ShowPopup)
+{
+    <div class="popup-overlay">
+        <div class="popup">
+            <h3>Class Schedule</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>TimeSlot</th>
+                    <th>Sunday</th>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var schedule in ClassSchedules)
+                {
+                    <tr>
+                        <td>@schedule.TimeSlot</td>
+                        <td>@schedule.Sunday</td>
+                        <td>@schedule.Monday</td>
+                        <td>@schedule.Tuesday</td>
+                        <td>@schedule.Wednesday</td>
+                        <td>@schedule.Thursday</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <button class="btn btn-danger" @onclick="ClosePopup1">Close</button>
+        </div>
+    </div>
+}
+
+@code {
+
+
+    private int? SelectedClassId
+    {
+        get => _selectedClassId;
+        set
+        {
+            _selectedClassId = value;
+            LoadSchedule();
+        }
+    }
+
+    private int? _selectedClassId;
+
+
+    private List<string> TimeSlots = new()
+    {
+        "8:00-9:30",
+        "9:40-11:10",
+        "11:20-13:10",
+        "13:20-14:40",
+        "14:50-16:20"
+    };
+
+    private List<string> DaysOfWeek = new()
+    {
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday"
+    };
+
+    private List<string> Department = new()
+    {
+        "Informatique",
+        "Tecno"
+    };
+
+    [Inject] public ClassScheduleStorage ScheduleStorage { get; set; }
+    private List<ClassScheduleModel> ClassSchedules = new();
+
+    private bool ShowPopup { get; set; } = false;
+
+    private void OnClassSelected(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int classId))
+        {
+            SelectedClassId = classId;
+        }
+    }
+
+    private async Task LoadSchedule()
+    {
+        if (SelectedClassId.HasValue && SelectedClassId.Value > 0)
+        {
+            ClassSchedules = await ScheduleStorage.GetClassScheduleAsync(SelectedClassId.Value);
+            ShowPopup = true;
+        }
+    }
+
+
+    private void ClosePopup1()
+    {
+        ShowPopup = false;
+    }
+
+    private bool IsPopupOpen = false;
+    private ClassReservation reservation = new();
+    [Inject] public ClassReservationStorage ReservationService { get; set; }
+    [Inject] public ClassStorage ClassStorage { get; set; }
+    [Inject] public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    public List<ClassRoom> ClassRooms = new List<ClassRoom>();
+    public string fullname = string.Empty;
+
+    public void OpenPopup()
+    {
+        reservation = new ClassReservation();
+        IsPopupOpen = true;
+    }
+
+    public void ClosePopup()
+    {
+        IsPopupOpen = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClassRooms = await ClassStorage.GetAllClassesAsync();
+        var result = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        fullname = result.User.Identity?.Name ?? "Unknown";
+    }
+
+    private async Task SubmitReservation()
+    {
+        var reserve = new ClassReservation
+        {
+            IdClass = reservation.IdClass,
+            Department = reservation.Department,
+            Block = reservation.Block,
+            DateReserved = reservation.DateReserved,
+            TimeSlot = reservation.TimeSlot,
+            TeacherName = fullname,
+            Day = reservation.Day,
+            LevelId = reservation.LevelId,
+            Compensation = reservation.Compensation,
+            Description = reservation.Description
+        };
+
+        await ReservationService.AddReservationAsync(reserve);
+        await ReservationService.UpdateStateClasse(reserve);
+        ClosePopup();
+    }
+
+}
+
+
+<style>
+    .popup {
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        width: 600px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .popup h2 {
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 22px;
+    }
+
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .popup-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 0px 0;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        justify-content: space-between;
+    }
+
+    .input-group label {
+        width: 160px;
+        font-weight: bold;
+        text-align: right;
+        color: #444;
+    }
+
+    .input-group input,
+    .input-group select {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        transition: 0.3s ease-in-out;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+        border-color: #007BFF;
+        outline: none;
+        background-color: #fff;
+    }
+
+    .popup-buttons {
+        margin-top: 20px;
+        display: inline-block;
+        justify-content: space-between;
+    }
+
+    .submit-btn,
+    .cancel-btn {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: bold;
+    }
+
+    .submit-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        margin-right: 10px;
+    }
+
+    .submit-btn:hover {
+        background-color: #218838;
+    }
+
+    .cancel-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        margin-left: 10px;
+    }
+
+    .cancel-btn:hover {
+        background-color: #c82333;
+    }
+
+
+</style>

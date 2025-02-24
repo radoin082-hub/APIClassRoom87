@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Réservations</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        .btn-cancel { background-color: #dc3545; color: white; padding: 8px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>✅ Mes Réservations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Salle</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reservationTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadReservations() {
+            const response = await fetch("http://localhost:5000/my_reservations");
+            const reservations = await response.json();
+            document.getElementById("reservationTableBody").innerHTML = reservations.map(r =>
+                `<tr><td>${r.id}</td><td>${r.room}</td><td>${r.date}</td><td>${r.time}</td><td><button class="btn-cancel">Annuler</button></td></tr>`
+            ).join("");
+        }
+        loadReservations();
+    </script>
+
+</body>
+</html>

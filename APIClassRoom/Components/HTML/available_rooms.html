@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salles Disponibles</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        .btn { padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .btn-book { background-color: #28a745; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📋 Liste des Salles Disponibles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Capacité</th>
+                    <th>Équipements</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="roomTableBody">
+                <!-- Les salles seront chargées ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadRooms();
+        });
+
+        async function loadRooms() {
+            const response = await fetch("http://localhost:5000/rooms");
+            const rooms = await response.json();
+            const tableBody = document.getElementById("roomTableBody");
+
+            tableBody.innerHTML = "";
+            rooms.forEach(room => {
+                const row = `<tr>
+                    <td>${room.id}</td>
+                    <td>${room.name}</td>
+                    <td>${room.capacity}</td>
+                    <td>${room.equipment}</td>
+                    <td><a href="reservation_form.html?roomId=${room.id}" class="btn btn-book">Réserver</a></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+    </script>
+
+</body>
+</html>

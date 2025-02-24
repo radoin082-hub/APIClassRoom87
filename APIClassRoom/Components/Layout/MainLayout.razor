@@ -1,0 +1,72 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor.Extensions
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand">Booking</a>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <AuthorizeView Roles="Admin">
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/dashboard">Dashboard</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/classes">Classes</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/levels">Manage Users</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/reservations_admin">Reservation</NavLink>
+                    </li>
+                </AuthorizeView>
+                <AuthorizeView Roles="student">
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/ClassCompensation">ClassCompensation</NavLink>
+                    </li>
+                </AuthorizeView>
+                <AuthorizeView Roles="Teacher">
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/Booking">Booking Class</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/reservation">Reservation</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/MyReservation">My Reservation</NavLink>
+                    </li>
+                </AuthorizeView>
+                <AuthorizeView Roles="Teacher">
+                    <li class="nav-item">
+                        <NavLink class="nav-link text-white" href="/Booking">Booking Class</NavLink>
+                    </li>
+                </AuthorizeView>
+            </ul>
+        </div>
+
+        <NavMenu/>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="content">
+    <article class="container mt-5 pt-4">
+        @Body
+    </article>
+</div>
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+<style>
+    .navbar-brand {
+        color: white !important;
+    }
+</style>

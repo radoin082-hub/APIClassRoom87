@@ -1,0 +1,27 @@
+﻿@page "/email"
+@inject EmailService EmailService
+@rendermode InteractiveServer
+<h3>Send Email</h3>
+
+
+<h3>Send Confirmation Email</h3>
+
+<input @bind="ToEmail" placeholder="Enter your email"/>
+<button @onclick="SendEmail">Send Confirmation</button>
+
+@if (MessageSent)
+{
+    <p>Email sent! Check your inbox.</p>
+}
+
+@code {
+    private string ToEmail;
+    private bool MessageSent = false;
+
+    private async Task SendEmail()
+    {
+        await EmailService.SendConfirmationEmailAsync(ToEmail);
+        MessageSent = true;
+    }
+
+}

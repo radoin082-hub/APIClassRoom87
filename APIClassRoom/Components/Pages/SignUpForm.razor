@@ -1,0 +1,67 @@
+﻿@page "/SignUp"
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+
+<EditForm Model="user" OnValidSubmit="SendConfirmationEmail">
+    <DataAnnotationsValidator/>
+
+    <div class="overlay">
+        <div class="signup-card p-4 shadow rounded">
+            <h4 class="text-center mb-3">Sign Up</h4>
+
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-control" @bind="user.Email" placeholder="Enter your email" required/>
+                <ValidationMessage For="@(() => user.Email)" class="text-danger"/>
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Sign Up</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+private UserModel user = new();
+
+private async Task SendConfirmationEmail()
+{
+var emailService = new EmailService();
+await emailService.SendConfirmationEmailAsync(user.Email);
+}
+
+public class UserModel
+{
+[Required(ErrorMessage = "Email is required")]
+[EmailAddress(ErrorMessage = "Invalid email format")]
+public string Email { get; set; } = "";
+}
+}
+
+<style>
+    .signup-card {
+        width: 400px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+</style>

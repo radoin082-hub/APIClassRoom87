@@ -1,0 +1,182 @@
+﻿USE [MyDb]
+GO
+/****** Object:  Table [dbo].[Classes]    Script Date: 3/7/2025 01:14:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Classes](
+	[IdClass] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[Localisation] [nvarchar](255) NOT NULL,
+	[Block] [nvarchar](50) NOT NULL,
+	[Department] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdClass] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ClassReservations]    Script Date: 3/7/2025 01:14:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ClassReservations](
+	[Id] [uniqueidentifier] NOT NULL,
+	[IdClass] [int] NULL,
+	[Department] [varchar](max) NOT NULL,
+	[Block] [varchar](max) NOT NULL,
+	[TeacherName] [varchar](max) NOT NULL,
+	[DateReserved] [date] NOT NULL,
+	[TimeSlot] [varchar](max) NOT NULL,
+	[Day] [varchar](max) NOT NULL,
+	[LevelId] [int] NOT NULL,
+	[Compensation] [varchar](max) NULL,
+	[Description] [varchar](max) NULL,
+ CONSTRAINT [PK__ClassRes__3214EC07248EC959] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Level]    Script Date: 3/7/2025 01:14:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Level](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_Level] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Times]    Script Date: 3/7/2025 01:14:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Times](
+	[TimeSlot] [nvarchar](20) NULL,
+	[IdClass] [int] NULL,
+	[Sunday] [varchar](50) NULL,
+	[Monday] [varchar](50) NULL,
+	[Tuesday] [varchar](50) NULL,
+	[Wednesday] [varchar](50) NULL,
+	[Thursday] [varchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 3/7/2025 01:14:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Levelid] [int] NULL,
+	[Email] [nvarchar](255) NOT NULL,
+	[Password] [nvarchar](255) NOT NULL,
+	[FullName] [nvarchar](255) NOT NULL,
+	[Role] [int] NOT NULL,
+ CONSTRAINT [PK__Users__3214EC070B40D97B] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Classes] ON 
+GO
+INSERT [dbo].[Classes] ([IdClass], [Name], [Localisation], [Block], [Department]) VALUES (21, N'a', N'a', N'a', N'a')
+GO
+SET IDENTITY_INSERT [dbo].[Classes] OFF
+GO
+INSERT [dbo].[ClassReservations] ([Id], [IdClass], [Department], [Block], [TeacherName], [DateReserved], [TimeSlot], [Day], [LevelId], [Compensation], [Description]) VALUES (N'10f9022e-0a0c-417b-a50e-31424471ce5f', 21, N'Informatique', N'B', N'RED ONE', CAST(N'2024-01-01' AS Date), N'8:00-9:30', N'Wednesday', 4, N'Manegment', N'??? ????')
+GO
+INSERT [dbo].[ClassReservations] ([Id], [IdClass], [Department], [Block], [TeacherName], [DateReserved], [TimeSlot], [Day], [LevelId], [Compensation], [Description]) VALUES (N'd2bad6ef-7ef2-4c63-8435-41657807f623', 21, N'Technologer', N'B', N'RED ONE', CAST(N'2024-01-01' AS Date), N'9:40-11:10', N'Tuesday', 4, N'Math-2', N'??? ??????? ???? ???')
+GO
+INSERT [dbo].[ClassReservations] ([Id], [IdClass], [Department], [Block], [TeacherName], [DateReserved], [TimeSlot], [Day], [LevelId], [Compensation], [Description]) VALUES (N'5b928f76-f201-4629-bde3-6ad65ab045cb', 21, N'Technologer', N'B', N'RED ONE', CAST(N'2025-01-01' AS Date), N'11:20-13:10', N'Monday', 2, N'Agile-1', N'jj')
+GO
+SET IDENTITY_INSERT [dbo].[Level] ON 
+GO
+INSERT [dbo].[Level] ([Id], [name]) VALUES (1, N'L1')
+GO
+INSERT [dbo].[Level] ([Id], [name]) VALUES (2, N'L2')
+GO
+INSERT [dbo].[Level] ([Id], [name]) VALUES (3, N'L3')
+GO
+INSERT [dbo].[Level] ([Id], [name]) VALUES (4, N'M1')
+GO
+INSERT [dbo].[Level] ([Id], [name]) VALUES (5, N'M2')
+GO
+SET IDENTITY_INSERT [dbo].[Level] OFF
+GO
+INSERT [dbo].[Times] ([TimeSlot], [IdClass], [Sunday], [Monday], [Tuesday], [Wednesday], [Thursday]) VALUES (N'8:00-9:30', 21, N'0', N'0', N'0', N'Manegment', N'0')
+GO
+INSERT [dbo].[Times] ([TimeSlot], [IdClass], [Sunday], [Monday], [Tuesday], [Wednesday], [Thursday]) VALUES (N'9:40-11:10', 21, N'0', N'0', N'Math-2', N'0', N'0')
+GO
+INSERT [dbo].[Times] ([TimeSlot], [IdClass], [Sunday], [Monday], [Tuesday], [Wednesday], [Thursday]) VALUES (N'11:20-13:10', 21, N'0', N'Agile-1', N'0', N'0', N'0')
+GO
+INSERT [dbo].[Times] ([TimeSlot], [IdClass], [Sunday], [Monday], [Tuesday], [Wednesday], [Thursday]) VALUES (N'13:20-14:40', 21, N'0', N'0', N'0', N'0', N'0')
+GO
+INSERT [dbo].[Times] ([TimeSlot], [IdClass], [Sunday], [Monday], [Tuesday], [Wednesday], [Thursday]) VALUES (N'14:50-16:20', 21, N'0', N'0', N'0', N'0', N'0')
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'2b732363-f699-4863-9661-101e8e3865c2', 4, N'khadidjazergane@univ-biskra.com', N'$2a$11$RNIuiS/lnbzerbjNB/gTE.WdnC99soBe/1kgeByfAg3qjkWokHFNi', N'Khadija Zergan', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'e41e09f0-4016-4ba3-bad8-2046c9f94e04', 2, N'moh@gmail.com', N'$2a$11$ryqSg7rDom3ZlTUhTHdMZes0wxTQPqByF5z8YSq8zaFQenw4LQCWW', N'mohamed', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'c03a3049-2f12-4420-bea9-27a5c37c3649', 4, N'tinhinanegasmi@gmail.com', N'$2a$11$SEMMLyAvcPT6IP5D/D0YP.II23UIRp7zRySmAzr.bZVs4XVd5t.Wa', N'Tinhinane gasmi', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'4416ba73-15e6-4035-a838-825807375d4e', NULL, N'red@univ-biskra.dz', N'$2a$12$5cuB1UTYMQ5RxqkcEzSS9.UnijSLDRx2/QTqh50oIzynORtozqM52', N'RED ONE', 3)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'895c3637-847b-4241-9e7c-9bac858c7da3', 4, N'jamal123@univbiskra', N'$2a$11$rygXLF4s.2O2m.d.vRXHwupUAfgWwiK3YthUOZEM22ZOP7pTxXVnW', N'jamal', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'51e2c552-a007-4ac4-9634-a02271c09de5', 2, N'onnoo2@agd.cas', N'$2a$11$aPo0Wk/0WYy.aKZvxp40COL3Mk.Ebsc8GtgcNpmMpEO2e8q91xA1.', N'nol', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'472aabef-3c3e-4632-b9cf-a2fe2763685c', 4, N'lahouelhadjer@gmail.com', N'$2a$11$ozhpEloNsyHoaZd5cPs8VuLUAK4KC3J4EDBRGNlcjvalfEuskJWui', N'Lahel Hadjer', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'd117b4a7-cdaa-4455-8105-aef22c9c0a48', 1, N'23@asf.cas', N'$2a$11$biELZrRQKaCMojU47.N6YONlDIHDrk/bRtmb0vAbLq7iX/4GrvQSC', N'23', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'8ae77032-caf4-4d42-becb-b251e276f17e', 5, N'red@gmail.com', N'$2a$11$OOZmUE4fl//dqgS5JA.X3.j.rf.P3jdAAXiTqyQk2evnKzf/XMsSO', N'Red One', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'b37cd7a0-6ab2-4c87-a773-d6eac5fa1d2c', 3, N'qq@gmail.com', N'$2a$11$hV04GU/lNpEpZ0wO9ojG/.ZtPMNWY4xge/n2oFhsqfZCcRE/l/lwC', N'qq', 2)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'f74fa7c4-d80a-4324-93e8-da5ec4180abf', 4, N'ikramenaichi@gmail.com', N'$2a$11$pAfIRvAwCUdtHyqDuLKRbu04sRK/dUH6ljCo7cvOL022dY4XU.J1u', N'Ikram naichi', 1)
+GO
+INSERT [dbo].[Users] ([Id], [Levelid], [Email], [Password], [FullName], [Role]) VALUES (N'61cd9334-a428-4302-84e8-e3687657d2b6', NULL, N'2@gmail.com', N'$2a$11$2VIF3zyDYT/UNHVOehfi3.mR6amWoEvRTAclYO5yVtqJFqf.1lDaO', N'qq', 1)
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Users__A9D10534BA54612F]    Script Date: 3/7/2025 01:14:00 ******/
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [UQ__Users__A9D10534BA54612F] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[ClassReservations] ADD  CONSTRAINT [DF__ClassReserva__Id__5BE2A6F2]  DEFAULT (newid()) FOR [Id]
+GO
+ALTER TABLE [dbo].[Times] ADD  CONSTRAINT [DF__Times__Sunday__3F466844]  DEFAULT ('N/A') FOR [Sunday]
+GO
+ALTER TABLE [dbo].[Times] ADD  CONSTRAINT [DF__Times__Monday__403A8C7D]  DEFAULT ('N/A') FOR [Monday]
+GO
+ALTER TABLE [dbo].[Times] ADD  CONSTRAINT [DF__Times__Tuesday__412EB0B6]  DEFAULT ('N/A') FOR [Tuesday]
+GO
+ALTER TABLE [dbo].[Times] ADD  CONSTRAINT [DF__Times__Wednesday__4222D4EF]  DEFAULT ('N/A') FOR [Wednesday]
+GO
+ALTER TABLE [dbo].[Times] ADD  CONSTRAINT [DF__Times__Thursday__4316F928]  DEFAULT ('N/A') FOR [Thursday]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF__Users__Id__48CFD27E]  DEFAULT (newid()) FOR [Id]
+GO
+ALTER TABLE [dbo].[Times]  WITH CHECK ADD  CONSTRAINT [FK__Times__IdClass__440B1D61] FOREIGN KEY([IdClass])
+REFERENCES [dbo].[Classes] ([IdClass])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Times] CHECK CONSTRAINT [FK__Times__IdClass__440B1D61]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Level] FOREIGN KEY([Levelid])
+REFERENCES [dbo].[Level] ([Id])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Level]
+GO

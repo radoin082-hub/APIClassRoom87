@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-settings { background-color: #007bff; color: white; }
+        .btn-password { background-color: #28a745; color: white; }
+        .btn-security { background-color: #ffc107; color: black; }
+        .btn-theme { background-color: #6c757d; color: white; }
+        .btn:hover { opacity: 0.8; }
+        .hidden {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin: 10px 0;
+            text-align: left;
+        }
+        label { font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-save {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="available_rooms.html">📋 Salles Disponibles</a>
+    <a href="reservation_form.html">📝 Réserver</a>
+    <a href="my_reservations.html">✅ Mes Réservations</a>
+    <a href="dashboard.html">🎛 Admin</a>
+    <a href="settings.html">⚙️ Paramètres</a>
+    <a href="login.html">🔑 Déconnexion</a>
+</div>
+
+<style>
+    .navbar {
+        background-color: #007bff;
+        padding: 15px;
+        text-align: center;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+    <div class="container">
+        <h2>Paramètres</h2>
+        
+        <button class="btn btn-settings" onclick="toggleSection('accountSettings')">👤 Paramètres du compte</button>
+        <button class="btn btn-password" onclick="toggleSection('passwordSettings')">🔑 Changer le mot de passe</button>
+        <button class="btn btn-security" onclick="toggleSection('securitySettings')">🔒 Sécurité</button>
+        <button class="btn btn-theme" onclick="toggleDarkMode()">🌗 Mode Sombre/Clair</button>
+
+        <div id="accountSettings" class="hidden">
+            <h3>👤 Modifier le profil</h3>
+            <div class="form-group">
+                <label for="name">Nom:</label>
+                <input type="text" id="name" placeholder="Votre nom">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Votre email">
+            </div>
+            <button class="btn-save" onclick="saveSettings()">💾 Enregistrer</button>
+        </div>
+
+        <div id="passwordSettings" class="hidden">
+            <h3>🔑 Changer le mot de passe</h3>
+            <div class="form-group">
+                <label for="oldPassword">Ancien mot de passe:</label>
+                <input type="password" id="oldPassword" placeholder="Entrez l'ancien mot de passe">
+            </div>
+            <div class="form-group">
+                <label for="newPassword">Nouveau mot de passe:</label>
+                <input type="password" id="newPassword" placeholder="Entrez un nouveau mot de passe">
+            </div>
+            <button class="btn-save" onclick="changePassword()">💾 Modifier</button>
+        </div>
+
+        <div id="securitySettings" class="hidden">
+            <h3>🔒 Paramètres de sécurité</h3>
+            <p>Activation de l'authentification en deux étapes bientôt disponible.</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleSection(sectionId) {
+            document.querySelectorAll(".hidden").forEach(section => {
+                if (section.id === sectionId) {
+                    section.style.display = section.style.display === "block" ? "none" : "block";
+                } else {
+                    section.style.display = "none";
+                }
+            });
+        }
+
+        function saveSettings() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+
+            fetch("http://localhost:5000/user/settings", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email })
+            }).then(() => alert("Paramètres enregistrés avec succès!"));
+        }
+
+        function changePassword() {
+            const oldPassword = document.getElementById("oldPassword").value;
+            const newPassword = document.getElementById("newPassword").value;
+
+            fetch("http://localhost:5000/user/password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ oldPassword, newPassword })
+            }).then(() => alert("Mot de passe changé avec succès!"));
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            let isDarkMode = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDarkMode);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+﻿@page "/reservations_admin"
+@using Microsoft.AspNetCore.Authorization
+@using APIClassRoom.Model
+@using APIClassRoom.Storage
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+@inject ClassReservationStorage ReservationStorage
+
+<h3>Reservations</h3>
+
+@if (reservations == null)
+{
+    <p>Loading...</p>
+}
+else if (!reservations.Any())
+{
+    <p>No reservations found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>N</th>
+                <th>Class</th>
+                <th>Department</th>
+                <th>Block</th>
+                <th>Teacher</th>
+                <th>Date Reserved</th>
+                <th>Time Slot</th>
+                <th>Day</th>
+                <th>Level</th>
+                <th>Compensation</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in reservations)
+            {
+                <tr>
+                    <td>@(reservations.IndexOf(reservation) + 1)</td>
+                    <td>@reservation.IdClass</td>
+                    <td>@reservation.Department</td>
+                    <td>@reservation.Block</td>
+                    <td>@reservation.TeacherName</td>
+                    <td>@reservation.DateReserved</td>
+                    <td>@reservation.TimeSlot</td>
+                    <td>@reservation.Day</td>
+                    <td>@reservation.LevelId</td>
+                    <td>@reservation.Compensation</td>
+                    <td>@reservation.Description</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteReservation(reservation.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ClassReservation> reservations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        reservations = await ReservationStorage.GetAllAsync();
+    }
+
+    private async Task DeleteReservation(Guid id)
+    {
+        bool success = await ReservationStorage.DeleteAsync(id);
+        if (success)
+        {
+            reservations = await ReservationStorage.GetAllAsync();
+        }
+    }
+}

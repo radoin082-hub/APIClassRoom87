@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Salles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="available_rooms.html">📋 Salles Disponibles</a>
+    <a href="reservation_form.html">📝 Réserver</a>
+    <a href="my_reservations.html">✅ Mes Réservations</a>
+    <a href="dashboard.html">🎛 Admin</a>
+    <a href="settings.html">⚙️ Paramètres</a>
+    <a href="login.html">🔑 Déconnexion</a>
+</div>
+
+<style>
+    .navbar {
+        background-color: #007bff;
+        padding: 15px;
+        text-align: center;
+    }
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+    <div class="container">
+        <h2>Gestion des Salles</h2>
+        <button class="btn btn-add" onclick="addRoom()">+ Ajouter une salle</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Capacité</th>
+                    <th>Équipements</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="roomTableBody">
+                <!-- Les salles seront chargées ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadRooms();
+        });
+
+        async function loadRooms() {
+            try {
+                const response = await fetch("http://localhost:5000/rooms");
+                const rooms = await response.json();
+                const tableBody = document.getElementById("roomTableBody");
+
+                tableBody.innerHTML = "";
+                rooms.forEach(room => {
+                    const row = `<tr>
+                        <td>${room.id}</td>
+                        <td>${room.name}</td>
+                        <td>${room.capacity}</td>
+                        <td>${room.equipment}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editRoom(${room.id})">Modifier</button>
+                            <button class="btn btn-delete" onclick="deleteRoom(${room.id})">Supprimer</button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Erreur lors du chargement des salles:", error);
+            }
+        }
+
+        function addRoom() {
+            const name = prompt("Nom de la salle:");
+            const capacity = prompt("Capacité:");
+            const equipment = prompt("Équipements (séparés par des virgules):");
+
+            if (name && capacity && equipment) {
+                fetch("http://localhost:5000/rooms", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, capacity, equipment })
+                }).then(() => loadRooms());
+            }
+        }
+
+        function editRoom(id) {
+            alert("Modifier la salle avec ID: " + id);
+            // Ajouter un formulaire pour la modification ici
+        }
+
+        function deleteRoom(id) {
+            if (confirm("Voulez-vous supprimer cette salle ?")) {
+                fetch(`http://localhost:5000/rooms/${id}`, { method: "DELETE" })
+                    .then(() => loadRooms());
+            }
+        }
+    </script>
+
+</body>
+</html>

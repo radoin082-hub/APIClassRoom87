@@ -1,0 +1,180 @@
+﻿@page "/students/{levelId:int}"
+@using APIClassRoom.Model
+@using APIClassRoom.Storage
+@using Microsoft.AspNetCore.Authorization
+@using Align = MudBlazor.Align
+@using MudBlazor
+@inject HttpClient Http
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="students-container">
+    <MudText Typo="Typo.h4" Align="Align.Center" Class="my-6 text-primary">🎓 Students List</MudText>
+
+    <!-- Search Input -->
+    <MudTextField @bind-Value="searchQuery" Placeholder="🔍 Search students..." Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-6 search-bar" FullWidth OnInput="FilterStudents"/>
+
+
+    @if (filteredStudents == null)
+    {
+        <MudText Typo="Typo.body1" Align="Align.Center" Class="text-gray-500 animate-pulse">Loading...</MudText>
+    }
+    else if (filteredStudents.Count == 0)
+    {
+        <MudText Typo="Typo.body1" Align="Align.Center" Class="text-gray-500">No students found.</MudText>
+    }
+    else
+    {
+        <br/>
+        <br/>
+        <br/>
+
+    <MudGrid Class="grid-container" Spacing="3">
+        @foreach (var student in filteredStudents)
+        {
+        <MudGrid Item xs="12" sm="6" md="4" lg="3">
+            <MudCard Class="student-card">
+                <MudCardContent Class="student-avatar-container">
+                    <MudAvatar Size="Size.Large"
+                               Class="student-avatar"
+                               Style="@($"background-color: {student.RandomColor}; color: white; font-weight: bold;")">
+                        @GetFirstCharacter(student.FullName)
+                    </MudAvatar>
+                </MudCardContent>
+
+                <MudCardContent Class="student-details">
+                    <MudText Typo="Typo.h6" Inline="true" Class="student-name">@student.FullName</MudText>
+                    <MudText Typo="Typo.body2" Class="student-email">@student.Email</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudGrid>
+        }
+    </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int LevelId { get; set; }
+    private static readonly Random random = new();
+    private List<User> students = new();
+    private List<User> filteredStudents = new();
+    private string searchQuery = "";
+    [Inject] public UserStorage userStorage { set; get; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        /*
+        students = await Http.GetFromJsonAsync<List<User>>($"api/user/students/{LevelId}") ?? new();
+        */
+        students = await userStorage.GetUsersByLevelAsync(LevelId);
+        foreach (var student in students)
+        {
+            student.RandomColor = GetRandomColor();
+        }
+
+        filteredStudents = students;
+    }
+
+    private void FilterStudents(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            filteredStudents = students;
+        }
+        else
+        {
+            filteredStudents = students
+                .Where(s => s.FullName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                            s.Email.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+    private string GetFirstCharacter(string fullName)
+    {
+        return string.IsNullOrWhiteSpace(fullName) ? "?" : fullName[0].ToString().ToUpper();
+    }
+
+    private string GetRandomColor()
+    {
+        string[] colors = { "#FF5733", "#33FF57", "#3357FF", "#F39C12", "#8E44AD", "#E74C3C", "#2ECC71", "#3498DB" };
+        return colors[random.Next(colors.Length)];
+    }
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "?";
+
+        return string.Join("", fullName.Split(' ').Select(name => name[0])).ToUpper();
+    }
+
+    /*private class User
+    {
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string AvatarUrl { get; set; } = "school.png";
+        public string RandomColor { get; set; }
+    }*/
+
+}
+
+<style>
+    .grid-container {
+      
+        flex-wrap: nowrap; /* Prevents wrapping */
+       
+    }
+
+    .student-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .student-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .student-avatar-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .student-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .student-details {
+        padding: 20px;
+    }
+
+    .student-name {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .student-email {
+        font-size: 14px;
+        color: gray;
+    }
+
+    .btn-view {
+        transition: all 0.3s ease;
+    }
+
+    .btn-view:hover {
+        transform: scale(1.05);
+    }
+</style>

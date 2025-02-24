@@ -1,0 +1,177 @@
+﻿@rendermode InteractiveServer
+
+@if (visible)
+{
+<div class="chat-container">
+    <div class="chat-header">
+        AI Chat
+        <span class="close-button" @onclick="CloseChat">&times;</span>
+    </div>
+    <div class="chat-box">
+        @foreach (var msg in Messages)
+        {
+        <div class="message @(msg.IsUser ? "user-message" : "bot-message")">
+            <div class="message-content">@msg.Content</div>
+        </div>
+        }
+    </div>
+    <div class="input-container">
+        <input @bind="UserMessage" @bind:event="oninput" class="chat-input" placeholder="Type a message..." />
+        <button @onclick="SendMessage" class="send-button">&#10148;</button>
+    </div>
+</div>
+}
+
+@code {
+[Inject] public ChatService ChatService { get; set; }
+private bool visible = false;
+private string UserMessage = "";
+private List<ChatMessage> Messages = new();
+
+public void ShowIAAssistant()
+{
+visible = !visible;
+StateHasChanged();
+}
+
+private async Task SendMessage()
+{
+if (string.IsNullOrWhiteSpace(UserMessage)) return;
+
+Messages.Add(new ChatMessage { Content = UserMessage, IsUser = true });
+var botResponse = await ChatService.GetBotResponse(UserMessage);
+
+
+var botMsg = new ChatMessage { Content = "", IsUser = false };
+Messages.Add(botMsg);
+
+foreach (char c in botResponse)
+{
+botMsg.Content += c;
+StateHasChanged();
+await Task.Delay(10);
+}
+
+UserMessage = "";
+}
+
+private void CloseChat()
+{
+Messages.Clear();
+visible = false;
+}
+
+public class ChatMessage
+{
+public string Content { get; set; }
+public bool IsUser { get; set; }
+}
+}
+
+<style>
+    .chat-container {
+        width: 400px;
+        height: 550px;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #222;
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .chat-header {
+        background: #0078D7;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        position: relative;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+
+    .close-button {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 20px;
+        transition: 0.2s;
+    }
+
+    .close-button:hover {
+        color: #ccc;
+    }
+
+    .chat-box {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 15px;
+        word-wrap: break-word;
+    }
+
+    .user-message {
+        background: #0078D7;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+
+    .bot-message {
+        background: #333;
+        color: white;
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+    }
+
+    .input-container {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #444;
+        background: #222;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        outline: none;
+    }
+
+    .send-button {
+        background: #0078D7;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    .send-button:hover {
+        background: #0056b3;
+    }
+</style>
