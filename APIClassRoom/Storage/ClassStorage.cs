@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 public class ClassStorage
 {
-    private readonly string _connectionString;
+    private readonly IDbConnection _connection;
 
-    public ClassStorage(string connectionString)
+    public ClassStorage(IDbConnection connection)
     {
-        _connectionString = connectionString;
+        _connection = connection;
     }
 
     public async Task<List<ClassRoom>> GetAllClassesAsync()
     {
         var classes = new List<ClassRoom>();
 
-        using (SqlConnection conn = new SqlConnection(_connectionString))
+        using (SqlConnection conn = new SqlConnection(_connection.ConnectionString))
         {
             await conn.OpenAsync();
             string query = "SELECT * FROM Classes";
@@ -50,7 +50,7 @@ public class ClassStorage
     {
         int newClassId = 0;
 
-        using (SqlConnection conn = new SqlConnection(_connectionString))
+        using (SqlConnection conn = new SqlConnection(_connection.ConnectionString))
         {
             await conn.OpenAsync();
             var query = @"
@@ -73,9 +73,9 @@ public class ClassStorage
     }
 
 
-    public async Task DeleteClassAsync(int id)
+    public async Task<bool> DeleteClassAsync(int id)
     {
-        using (SqlConnection conn = new SqlConnection(_connectionString))
+        using (SqlConnection conn = new SqlConnection(_connection.ConnectionString))
         {
             await conn.OpenAsync();
             string query = "DELETE FROM Classes WHERE IdClass = @Id";
@@ -83,7 +83,8 @@ public class ClassStorage
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 cmd.Parameters.AddWithValue("@Id", id);
-                await cmd.ExecuteNonQueryAsync();
+                var r=await cmd.ExecuteNonQueryAsync();
+                return r > 0 ? true : false;
             }
         }
     }

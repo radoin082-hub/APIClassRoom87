@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.FluentUI.AspNetCore.Components;
 using MudBlazor.Services;
 using Radzen;
@@ -23,7 +24,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<ClassStorage>(
-    new ClassStorage(con));
+    new ClassStorage(new SqlConnection(con)));
 builder.Services.AddSingleton<TimeSlotStorage>(
     new TimeSlotStorage(con));
 builder.Services.AddSingleton<UserStorage>(

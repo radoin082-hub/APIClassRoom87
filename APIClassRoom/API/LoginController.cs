@@ -1,6 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -10,28 +8,20 @@ using Microsoft.AspNetCore.Components;
 
 using Microsoft.JSInterop;
 
-
 namespace APIClassRoom.API
 {
     [Microsoft.AspNetCore.Mvc.Route("Login")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController(UserStorage userStorage, IConfiguration configuration) : ControllerBase
     {
-        private readonly UserStorage _userStorage;
-        private readonly IConfiguration _configuration;
-
-        public LoginController(UserStorage userStorage, IConfiguration configuration)
-        {
-            _userStorage = userStorage;
-            _configuration = configuration;
-        }
+        private readonly IConfiguration _configuration = configuration;
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromForm] string email, [FromForm] string password)
         {
             try
             {
-                User? user = await _userStorage.AuthenticateUserAsync(email, password);
+                User? user = await userStorage.AuthenticateUserAsync(email, password);
                 if (user is null)
                 {
                     return Unauthorized(new { Message = "Invalid email or password." });
@@ -46,7 +36,6 @@ namespace APIClassRoom.API
                     new Claim("LevelId", user.LevelId.ToString())
                 };
 
-                // ✅ Create Cookie Authentication
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
                 var authProperties = new AuthenticationProperties();
@@ -78,7 +67,7 @@ namespace APIClassRoom.API
             }
         }
 
-        [Inject] public IJSRuntime js { set; get; }
+        [Inject] public IJSRuntime js { set; get; } = null!;
 
         [HttpPost]
         [Microsoft.AspNetCore.Mvc.Route("logout")]
